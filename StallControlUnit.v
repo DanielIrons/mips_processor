@@ -12,6 +12,7 @@ module StallControlUnit(PC_WriteEn, IFID_WriteEn, Stall_flush, IDEX_MemRead, IDE
             PC_WriteEn = 1'b0;
             IFID_WriteEn = 1'b0;
             Stall_flush = 1'b1;
+            $display("STALL");
         end
         else
         begin

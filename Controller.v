@@ -16,7 +16,7 @@
 `define OPCODE_LDUR   11'b11111000010
 `define OPCODE_STUR   11'b11111000000
 
-module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, uncond_branch, aluop, signop, opcode);
+module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, uncond_branch, aluop, signop, opcode, Clk);
    
     output reg reg2loc;
     output reg alusrc;
@@ -29,6 +29,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
     output reg [3:0] aluop;
     output reg [2:0] signop;
     input [10:0] opcode;
+    input wire Clk;
 
     always @(*)
     begin

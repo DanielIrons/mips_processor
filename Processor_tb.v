@@ -33,6 +33,7 @@ module ProcTest_v;
 
     // Inputs
     reg        CLK;
+    reg [7:0]  ClkNum;
     reg        Reset_L;
     reg [63:0] startPC;
     reg [7:0]  passed;
@@ -60,6 +61,7 @@ module ProcTest_v;
         Reset_L = 1;
         startPC = 0;
         passed = 0;
+        ClkNum = 0;
 
         // Initialize Watchdog timer
         watchdog = 0;
@@ -108,6 +110,9 @@ module ProcTest_v;
     always begin
         #`HalfClockPeriod CLK = ~CLK;
         #`HalfClockPeriod CLK = ~CLK;
+        ClkNum = ClkNum + 1;
+        $display(" ");
+        $display("CLOCK: %d", ClkNum);
         watchdog = watchdog +1;
     end
 

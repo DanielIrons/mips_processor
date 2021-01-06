@@ -17,9 +17,11 @@ module RegisterFile(BusA, BusB, BusW, RA, RB, RW, RegWr, Clk);
     assign BusA = (RA == 31) ? 0 : registers[RA]; // Assign out put to register RA
     assign BusB = (RB == 31) ? 0 : registers[RB]; // Assign other output to be register RB
 
-    always@(posedge Clk)
-        // $display("BusA: %h RA: %d BusB: %h RB: %d", BusA, RA, BusB, RB);
-        $display("regWr: %b, RW: %b, BusW: %h, reg2: %h, reg4: %h, reg9: %h", RegWr, RW, BusW, registers[2], registers[4], registers[9]);
+    always@(posedge Clk) begin
+        // $display("BusW: %h RW: %d BusA: %h RA: %d BusB: %h RB: %d", BusW, RW, BusA, RA, BusB, RB);
+        $display("reg1: %d, reg2: %d", registers[1], registers[2]);
+    end
+
      
     always@ (negedge Clk) begin // On the negative edge
         if(RegWr && RW != 31) begin

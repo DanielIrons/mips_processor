@@ -7,7 +7,7 @@
 `include "ALU.v"
 `include "3To1Mux.v"
 `include "2To1Mux.v"
-`include "ForwardingUnit.v"
+`include "ForwardingUnitSequential.v"
 `include "HazardDetectionUnit.v"
 
 `timescale 1ns / 1ps
@@ -19,7 +19,6 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     output wire [63:0] WB_data;		  // For debug purposes
     output reg [31:0] instructionOut; // For debug purposes
     output reg [31:0] IFID_instruction_debug;
-    // output reg [63:0]
     input CLK;
 
     // Next PC connections
@@ -122,9 +121,14 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     // Update intermediary registers
     always @(posedge CLK)
     begin
+        // $display("IFID_Instruction: %h IDEX_rm: %d IDEX_rn: %d EXMEM_Write_Reg: %d, EXMEM_rd: %d, MEMWB_Write_Reg: %d, MEMWB_rd: %d", 
+        // IFID_instruction, IDEX_rm, IDEX_rn, EXMEM_WB[0], EXMEM_WReg, MEMWB_WB[0], MEMWB_WReg);
+        // $display("EXMEM_ALUout: %d, MEMWB_ALUout: %d", EXMEM_ALUout, MEMWB_ALUout);
+        // $display("IFID_Instruction: %h", IFID_instruction);
         if (resetl)
         begin
             if(IFID_WriteEn) begin
+                // $display("Updated IFID");
                 IFID_PC <= currentpc;
                 IFID_instruction <= instruction;
                 IFID_instruction_debug <= instruction;
@@ -196,7 +200,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         .PC_WriteEn(PC_WriteEn), .IFID_WriteEn(IFID_WriteEn), 
         .Stall_flush(Control_Sel), .IDEX_MemRead(IDEX_M[0]), 
         .IDEX_rd(IDEX_WReg), .IFID_rn(rn), 
-        .IFID_rm(rm), .IFID_rd(rd)
+        .IFID_rm(rm), .IFID_rd(rd), .Clk(CLK)
     );
 
     InstructionMemory imem(
@@ -215,7 +219,8 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         .uncond_branch(uncond_branch),
         .aluop(aluctrl),
         .signop(signop),
-        .opcode(opcode)
+        .opcode(opcode),
+        .Clk(CLK)
     );
 
     RegisterFile RegisterFile(
@@ -229,11 +234,11 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     );
 
     Mux2to1 ALUB_in1_src(
-        .out(ALUB_in1_choice), .in1(IDEX_rDataB), .in2(IDEX_SignExtender), .ctrl(IDEX_ALUop)
+        .out(ALUinB), .in1(ALUB_in1_choice), .in2(IDEX_SignExtender), .ctrl(IDEX_ALUop)
     );
 
     Mux3to1 ALUB(
-        .out(ALUinB), .in1(ALUB_in1_choice), .in2(WB_data), .in3(EXMEM_ALUout), .ctrl(ForwardB), .Clk(CLK), .en(1'b1)
+        .out(ALUB_in1_choice), .in1(IDEX_rDataB), .in2(WB_data), .in3(EXMEM_ALUout), .ctrl(ForwardB), .Clk(CLK), .en(1'b1)
     );
 
     Mux3to1 ALUA(
