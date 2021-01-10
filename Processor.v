@@ -73,14 +73,14 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     wire IFID_WriteEn;
     wire Control_Sel;
 
-    wire BranchPC;
+    wire [63:0] BranchPC;
 
     // Registers for inter-stage storage
     reg [63:0] IFID_PC;
     reg [31:0] IFID_instruction;
 
     reg [1:0] IDEX_WB; // [0] writereg, [1] mem2reg
-    reg [3:0] IDEX_M; // [0] memread, [1] memwrite, [2] branch
+    reg [3:0] IDEX_M; // [0] memread, [1] memwrite, [2] branch, [3] unconditional branch
     reg [3:0] IDEX_EX; // [0] aluop[0], [1] aluop[1]
     reg [63:0] IDEX_PC;
     reg [63:0] IDEX_rDataA;
@@ -124,7 +124,8 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         // $display("IFID_Instruction: %h IDEX_rm: %d IDEX_rn: %d EXMEM_Write_Reg: %d, EXMEM_rd: %d, MEMWB_Write_Reg: %d, MEMWB_rd: %d", 
         // IFID_instruction, IDEX_rm, IDEX_rn, EXMEM_WB[0], EXMEM_WReg, MEMWB_WB[0], MEMWB_WReg);
         // $display("EXMEM_ALUout: %d, MEMWB_ALUout: %d", EXMEM_ALUout, MEMWB_ALUout);
-        // $display("IFID_Instruction: %h", IFID_instruction);
+        $display("Instruction: %h", instruction);
+        $display("Current PC: %h", currentpc);
         if (resetl)
         begin
             if(IFID_WriteEn) begin
@@ -187,6 +188,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     ForwardingUnit FU(
         .ForwardA(ForwardA), 
         .ForwardB(ForwardB), 
+        .Branching(EXMEM_M[2] | EXMEM_M[3] | IDEX_M[2] | IDEX_M[3]),
         .EXMEM_RegWrite(EXMEM_WB[0]), 
         .MEMWB_RegWrite(MEMWB_WB[0]), 
         .EXMEM_WriteRegister(EXMEM_WReg), 
@@ -265,8 +267,8 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
 
     PCLogic PCLogic(
         .NextPC(nextPC), 
-        .CurrPC(IFID_PC), .SignExtImm64(EXMEM_PC), 
+        .CurrPC(currentpc), .SignExtImm64(EXMEM_PC), 
         .Branch(EXMEM_M[2]), .ALUZero(EXMEM_Zero), .Unconditional(EXMEM_M[3]),
-        .WriteEn(PC_WriteEn)
+        .WriteEn(PC_WriteEn), .Clk(CLK)
     );
 endmodule

@@ -19,7 +19,7 @@ module SignExtender(BusImm, Imm26, Ctrl, Clk);
                 2'b01: // D
                     BusImm = {{56{Imm26[20]}}, Imm26[19:12]};
                 2'b10: // B
-                    BusImm = {{39{Imm26[25]}}, Imm26[24:0]};
+                    BusImm = {{39{Imm26[25]}}, ((~Imm26[24:0]) + 1'b1)};
                 2'b11: // CB
                     BusImm = {{45{Imm26[23]}}, Imm26[23:5]};
             	

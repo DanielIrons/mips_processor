@@ -118,7 +118,7 @@ module ProcTest_v;
 
     // Kill the simulation if the watchdog hits 64K cycles
     always @*
-        if (watchdog == 16'hFF)
+        if (watchdog == 16'h20)
         begin
             $display("Watchdog Timer Expired.");
             $finish;

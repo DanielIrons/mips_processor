@@ -128,6 +128,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
             end
             `OPCODE_B:
             begin
+                $display("Branch");
                 reg2loc       <= 1'bx;
                 alusrc        <= 1'bx;
                 mem2reg       <= 1'bx;
