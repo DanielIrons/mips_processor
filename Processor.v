@@ -80,7 +80,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     reg [31:0] IFID_instruction;
 
     reg [1:0] IDEX_WB; // [0] writereg, [1] mem2reg
-    reg [3:0] IDEX_M; // [0] memread, [1] memwrite, [2] branch, [3] unconditional branch
+    reg [4:0] IDEX_M; // [0] memread, [1] memwrite, [2] branch, [3] unconditional branch, [4] ZorNZ
     reg [3:0] IDEX_EX; // [0] aluop[0], [1] aluop[1]
     reg [63:0] IDEX_PC;
     reg [63:0] IDEX_rDataA;
@@ -93,7 +93,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
     reg [4:0] IDEX_rm;
 
     reg [1:0] EXMEM_WB;
-    reg [3:0] EXMEM_M;
+    reg [4:0] EXMEM_M;
     reg [63:0] EXMEM_PC;
     reg EXMEM_Zero;
     reg [63:0] EXMEM_ALUout;
@@ -124,8 +124,9 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         // $display("IFID_Instruction: %h IDEX_rm: %d IDEX_rn: %d EXMEM_Write_Reg: %d, EXMEM_rd: %d, MEMWB_Write_Reg: %d, MEMWB_rd: %d", 
         // IFID_instruction, IDEX_rm, IDEX_rn, EXMEM_WB[0], EXMEM_WReg, MEMWB_WB[0], MEMWB_WReg);
         // $display("EXMEM_ALUout: %d, MEMWB_ALUout: %d", EXMEM_ALUout, MEMWB_ALUout);
-        $display("Instruction: %h", instruction);
+        $display("Instruction: %h", IFID_instruction);
         $display("Current PC: %h", currentpc);
+        // $display("Branch: %d, EXMEM_Zero: %d, Write_En: %d, IDEX[2]: %d, EXMEM[2]: %d", branch, EXMEM_Zero, PC_WriteEn, IDEX_M[2], EXMEM_M[2]);
         if (resetl)
         begin
             if(IFID_WriteEn) begin
@@ -143,6 +144,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
                 IDEX_M[1] <= memwrite;
                 IDEX_M[2] <= branch;
                 IDEX_M[3] <= uncond_branch;
+                IDEX_M[4] <= zornz;
                 IDEX_EX[3:0] <= aluctrl;
             end
             else begin
@@ -150,9 +152,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
                 IDEX_WB[1] <= 0;
                 IDEX_ALUop <= 0;
                 IDEX_WReg <= 0;
-                IDEX_M[0] <= 0;
-                IDEX_M[1] <= 0;
-                IDEX_M[2] <= 0;
+                IDEX_M <= 0;
                 IDEX_EX[3:0] <= 0;
             end
             IDEX_PC <= IFID_PC;
@@ -219,6 +219,7 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         .memwrite(memwrite),
         .branch(branch),
         .uncond_branch(uncond_branch),
+        .zornz(zornz),
         .aluop(aluctrl),
         .signop(signop),
         .opcode(opcode),
@@ -269,6 +270,6 @@ module processor(resetl, startpc, currentpc, WB_data, instructionOut, IFID_instr
         .NextPC(nextPC), 
         .CurrPC(currentpc), .SignExtImm64(EXMEM_PC), 
         .Branch(EXMEM_M[2]), .ALUZero(EXMEM_Zero), .Unconditional(EXMEM_M[3]),
-        .WriteEn(PC_WriteEn), .Clk(CLK)
+        .ZorNZ(EXMEM_M[4]), .WriteEn(PC_WriteEn), .Clk(CLK)
     );
 endmodule

@@ -10,15 +10,15 @@
 module ALU(BusW, Zero, BusA, BusB, ALUCtrl, Clk);
 
     output  [63:0] BusW;
-    output  Zero;
+    output  reg Zero;
     input   [63:0] BusA, BusB;
     input   [3:0] ALUCtrl;
     input   Clk;
     
     reg     [63:0] BusW;
     
-    always @(BusA or BusB or ALUCtrl) begin
-        // $display("ALUCtrl: %b BusA: %d BusB: %d, BusW: %h", ALUCtrl, BusA, BusB, BusW);
+    always @(*) begin
+        // $display("ALUCtrl: %b BusA: %d BusB: %d, BusW: %h, Zero: %d", ALUCtrl, BusA, BusB, BusW, Zero);
         case(ALUCtrl)
             `AND:
                 BusW <= BusA & BusB;
@@ -34,7 +34,8 @@ module ALU(BusW, Zero, BusA, BusB, ALUCtrl, Clk);
           	`PassBM:
               	BusW <= BusB;
         endcase
+        Zero <= (BusW == 64'b0) ? 1 : 0;
     end
 
-    assign Zero = (BusW == 64'b0) ? 1 : 0;
+    // assign Zero = (BusW == 64'b0) ? 1 : 0;
 endmodule

@@ -19,7 +19,7 @@ module RegisterFile(BusA, BusB, BusW, RA, RB, RW, RegWr, Clk);
 
     always@(posedge Clk) begin
         // $display("BusW: %h RW: %d BusA: %h RA: %d BusB: %h RB: %d", BusW, RW, BusA, RA, BusB, RB);
-        $display("reg1: %d, reg2: %d", registers[1], registers[2]);
+        $display("reg1: %d, reg2: %d reg3: %d", registers[1], registers[2], registers[3]);
     end
 
      

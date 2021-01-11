@@ -12,11 +12,12 @@
 
 `define OPCODE_B      11'b000101xxxxx
 `define OPCODE_CBZ    11'b10110100xxx
+`define OPCODE_CBNZ    11'b10110101xxx
 
 `define OPCODE_LDUR   11'b11111000010
 `define OPCODE_STUR   11'b11111000000
 
-module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, uncond_branch, aluop, signop, opcode, Clk);
+module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, uncond_branch, zornz, aluop, signop, opcode, Clk);
    
     output reg reg2loc;
     output reg alusrc;
@@ -26,6 +27,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
     output reg memwrite;
     output reg branch;
     output reg uncond_branch;
+    output reg zornz;
     output reg [3:0] aluop;
     output reg [2:0] signop;
     input [10:0] opcode;
@@ -45,6 +47,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0000;
                 signop        <= 2'b00;
             end
@@ -58,6 +61,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0001;
                 signop        <= 2'b00;
             end
@@ -71,6 +75,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0010;
                 signop        <= 2'b00;
             end
@@ -84,6 +89,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0110;
                 signop        <= 2'b00;
             end
@@ -97,6 +103,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0010;
                 signop        <= 2'b00;
             end
@@ -110,6 +117,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0110;
                 signop        <= 2'b00;
             end
@@ -123,12 +131,13 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b1000;
                 signop        <= 3'b1xx;
             end
             `OPCODE_B:
             begin
-                $display("Branch");
+                $display("Unconditional Branch");
                 reg2loc       <= 1'bx;
                 alusrc        <= 1'bx;
                 mem2reg       <= 1'bx;
@@ -142,6 +151,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
             end
             `OPCODE_CBZ:
             begin
+                $display("Conditional Branch");
                 reg2loc       <= 1'b1;
                 alusrc        <= 1'b0;
                 mem2reg       <= 1'bx;
@@ -150,6 +160,22 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b1;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b1;
+                aluop         <= 4'b0111;
+                signop        <= 2'b11;
+            end
+            `OPCODE_CBNZ:
+            begin
+                $display("Conditional Branch");
+                reg2loc       <= 1'b1;
+                alusrc        <= 1'b0;
+                mem2reg       <= 1'bx;
+                regwrite      <= 1'b0;
+                memread       <= 1'b0;
+                memwrite      <= 1'b0;
+                branch        <= 1'b1;
+                uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0111;
                 signop        <= 2'b11;
             end
@@ -163,6 +189,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0010;
                 signop        <= 2'b01;
             end
@@ -176,6 +203,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b1;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'b0010;
                 signop        <= 2'b01;
             end
@@ -190,6 +218,7 @@ module control(reg2loc, alusrc, mem2reg, regwrite, memread, memwrite, branch, un
                 memwrite      <= 1'b0;
                 branch        <= 1'b0;
                 uncond_branch <= 1'b0;
+                zornz         <= 1'b0;
                 aluop         <= 4'bxxxx;
                 signop        <= 2'bxx;
             end
