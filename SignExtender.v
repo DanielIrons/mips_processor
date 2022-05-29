@@ -1,10 +1,9 @@
 `timescale 1ns / 1ps
 
-module SignExtender(BusImm, Imm26, Ctrl, Clk);
+module SignExtender(BusImm, Imm26, Ctrl);
     output [63:0] BusImm;
     input [25:0] Imm26;
     input [2:0] Ctrl;
-    input Clk;
     
     reg [63:0] BusImm;
 
@@ -12,7 +11,7 @@ module SignExtender(BusImm, Imm26, Ctrl, Clk);
     assign shift = Imm26[22:21];
 
     always@(*) begin
-            $display("Ctrl: %b Imm26: %h BusImm: %h", Ctrl, Imm26, BusImm);
+            // $display("Ctrl: %b Imm26: %h BusImm: %h", Ctrl, Imm26, BusImm);
             case(Ctrl)
                 2'b00: // I
                     BusImm <= {{53{Imm26[21]}}, Imm26[21:10]};

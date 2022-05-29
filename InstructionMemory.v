@@ -25,22 +25,9 @@ module InstructionMemory(Data, Address);
 			63'h008: Data = 32'h910003E3; // ADDI #0 X31 -> X3
 			63'h00c: Data = 32'h8B020021; // ADD X2, X1 -> X1
 			63'h010: Data = 32'h8B020022; // ADD X2, X1 -> X2
-			// 64'h014: Data = 32'h16000002; // B -0x010
 			63'h014: Data = 32'hB4800043; // CBZ X3 -0x010
-			// 63'h014: Data = 32'hB5800043; // CBNZ X3 -0x010
-
 
         	default: Data = 32'hXXXXXXXX;
     	endcase
 	end
 endmodule
-
-			// 64'h000: Data = 32'h
-			// 64'h004: Data = 32'h
-			// 64'h008: Data = 32'h
-			// 64'h00c: Data = 32'h
-			// 64'h010: Data = 32'h
-			// 64'h014: Data = 32'h
-			// 64'h018: Data = 32'h
-			// 64'h01c: Data = 32'h
-			// 64'h020: Data = 32'h

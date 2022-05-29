@@ -7,26 +7,21 @@
 `define PassB 4'b0111
 `define PassBM 4'b1000
 
-module ALU(BusW, Zero, BusA, BusB, ALUCtrl, Clk);
+module ALU(BusW, Zero, BusA, BusB, ALUCtrl);
 
-    output  [63:0] BusW;
+    output  reg [63:0] BusW;
     output  reg Zero;
     input   [63:0] BusA, BusB;
     input   [3:0] ALUCtrl;
-    input   Clk;
-    
-    reg     [63:0] BusW;
     
     always @(*) begin
-        // $display("ALUCtrl: %b BusA: %d BusB: %d, BusW: %h, Zero: %d", ALUCtrl, BusA, BusB, BusW, Zero);
         case(ALUCtrl)
             `AND:
                 BusW <= BusA & BusB;
             `OR: 
                 BusW <= BusA | BusB;
-            `ADD: begin
+            `ADD:
                 BusW <= $signed(BusA) + $signed(BusB);
-                end
             `SUB:
                 BusW <= $signed(BusA) - $signed(BusB);
             `PassB:
@@ -36,6 +31,4 @@ module ALU(BusW, Zero, BusA, BusB, ALUCtrl, Clk);
         endcase
         Zero <= (BusW == 64'b0) ? 1 : 0;
     end
-
-    // assign Zero = (BusW == 64'b0) ? 1 : 0;
 endmodule

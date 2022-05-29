@@ -6,30 +6,30 @@
 
 module ProcTest_v;
 
-    initial
-    begin
-        $dumpfile("singlecycle.vcd");
-        $dumpvars;
-    end
+    // initial
+    // begin
+    //     $dumpfile("singlecycle.vcd");
+    //     $dumpvars;
+    // end
 
     // These tasks are used to check if a given test has passed and
     // confirm that all tests passed.
-    task passTest;
-        input [63:0] actualOut, expectedOut;
-        input [`STRLEN*8:0] testType;
-        inout [7:0] 	  passed;
+    // task passTest;
+    //     input [63:0] actualOut, expectedOut;
+    //     input [`STRLEN*8:0] testType;
+    //     inout [7:0] 	  passed;
 
-        if(actualOut == expectedOut) begin $display ("%s passed", testType); passed = passed + 1; end
-        else $display ("%s failed: 0x%x should be 0x%x", testType, actualOut, expectedOut);
-    endtask
+    //     if(actualOut == expectedOut) begin $display ("%s passed", testType); passed = passed + 1; end
+    //     else $display ("%s failed: 0x%x should be 0x%x", testType, actualOut, expectedOut);
+    // endtask
 
-    task allPassed;
-        input [7:0] passed;
-        input [7:0] numTests;
+    // task allPassed;
+    //     input [7:0] passed;
+    //     input [7:0] numTests;
 
-        if(passed == numTests) $display ("All tests passed");
-        else $display("Some tests failed: %d of %d passed", passed, numTests);
-    endtask
+    //     if(passed == numTests) $display ("All tests passed");
+    //     else $display("Some tests failed: %d of %d passed", passed, numTests);
+    // endtask
 
     // Inputs
     reg        CLK;
@@ -40,20 +40,19 @@ module ProcTest_v;
     reg [15:0] watchdog;
 
     // Outputs
-    wire [63:0] WB_data;
+    wire [63:0] WBData;
     wire [31:0] instruction;
     wire [31:0] first_instruction;
     wire [63:0] currentPC;
 
     // Instantiate the Unit Under Test (UUT)
     processor uut (
-        .CLK(CLK),
+        .Clk(CLK),
         .resetl(Reset_L),
         .startpc(startPC),
         .currentpc(currentPC),
         .instructionOut(instruction),
-        .IFID_instruction_debug(first_instruction),
-        .WB_data(WB_data)
+        .WB_data(WBData)
     );
 
     initial begin
@@ -86,11 +85,10 @@ module ProcTest_v;
         while (currentPC < 64'h034)
           begin
              #(1 * `ClockPeriod);
-            // $display("CurrentPC: %h, WB_data: %h, instruction: %h, reg instruction: %h", currentPC, WB_data, instruction, first_instruction);
           end
         #(1 * `ClockPeriod);	// One more cycle to load the pass code from the DataMemory.
-        // passTest(WB_data, 63'h123456789ABCDEF0, "Results of Program", passed);
-        // passTest(WB_data, 63'd12, "Results of Program 1", passed);
+        // passTest(WBData, 63'h123456789ABCDEF0, "Results of Program", passed);
+        // passTest(WBData, 63'd12, "Results of Program 1", passed);
 
 
         // ***********************************************************
@@ -111,12 +109,15 @@ module ProcTest_v;
         #`HalfClockPeriod CLK = ~CLK;
         #`HalfClockPeriod CLK = ~CLK;
         ClkNum = ClkNum + 1;
+
         $display(" ");
         $display("CLOCK: %d", ClkNum);
+        $display("WB: %d", WBData);
+
         watchdog = watchdog +1;
     end
 
-    // Kill the simulation if the watchdog hits 64K cycles
+    // Kill the simulation if the watchdog hits # cycles
     always @*
         if (watchdog == 16'h20)
         begin

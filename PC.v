@@ -7,14 +7,7 @@ module PCLogic(NextPC, CurrPC, SignExtImm64, Branch, ALUZero, ZorNZ, Uncondition
 
      always@(*)
         if(WriteEn) begin
-            // $display("Enabled");
-            // if(Branch)
-            //     $display("branch is true.");
-            // if(ALUZero)
-            //     $display("ALU Zero is true");
             if((Branch && ALUZero && ZorNZ) || (Branch && !ALUZero && !ZorNZ) || Unconditional) begin // Branching logic
-                // $display("SignExtImm64: %d %b", $signed(SignExtImm64), SignExtImm64);
-                // $display("BRNACHING");
                 NextPC = SignExtImm64;
             end
             else
@@ -24,15 +17,12 @@ module PCLogic(NextPC, CurrPC, SignExtImm64, Branch, ALUZero, ZorNZ, Uncondition
             NextPC = CurrPC;
 endmodule
 
-module BranchPC(BranchPC, ExtendedImm, CurrentPC, Clk);
+module BranchPC(BranchPC, ExtendedImm, CurrentPC);
     input [63:0] ExtendedImm;
     input [63:0] CurrentPC;
-    input Clk;
     output reg [63:0] BranchPC;
 
     always@(*) begin
-        // $display("ExtendedImm: %d %b", $signed(ExtendedImm), $signed(ExtendedImm));
-        // $display("CurrentPC: %d BranchPC: %d", CurrentPC, $signed(BranchPC));
         BranchPC <= $signed(CurrentPC) + $signed(ExtendedImm <<< 2);
     end
 endmodule
